@@ -1,0 +1,47 @@
+# Example GitHub Actions workflow
+# Copy this to .github/workflows/update-blog.yml in your repository
+
+name: Update Blog Posts
+
+on:
+  schedule:
+    # Runs daily at midnight UTC
+    - cron: "0 0 * * *"
+  # Allow manual trigger from Actions tab
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-readme:
+    name: Update README with latest blog posts
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install -r feed-to-posts/requirements.txt
+
+      - name: Update README with blog posts
+        run: |
+          python feed-to-posts/update_readme.py \
+            --feed-url "https://yourblog.com/feed.xml" \
+            --readme-path "README.md" \
+            --template '$newline- [$title]($url) - $date' \
+            --date-format "mmm. yyyy"
+
+      - name: Commit and push if changed
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add README.md
+          git diff --quiet && git diff --staged --quiet || git commit -m "Update blog posts [skip ci]"
+          git push

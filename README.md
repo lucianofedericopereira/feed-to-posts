@@ -221,7 +221,3 @@ Contributions are welcome! Feel free to:
 - Report bugs
 - Suggest new features
 - Submit pull requests
-
-## Alternatives
-
-This project was inspired by [gautamkrishnar/blog-post-workflow](https://github.com/gautamkrishnar/blog-post-workflow) but offers a simpler, more transparent Python-based approach that's easier to customize and debug.

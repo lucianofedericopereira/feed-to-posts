@@ -15,7 +15,7 @@ def fetch_feed(feed_url):
 def format_date(date_string, date_format):
     """Format date according to specified format"""
     try:
-        dt = datetime.strptime(date_string, "%a, %d %b %Y %H:%M:%S %Z")
+        dt = datetime.strptime(date_string, "%a, %d %b %Y %H:%M:%S %z")
     except ValueError:
         try:
             dt = datetime.fromisoformat(date_string.replace('Z', '+00:00'))

@@ -8,6 +8,7 @@ A lightweight Python script to automatically update your GitHub README with blog
 - Customizable templates for formatting
 - Flexible date formatting
 - Automatic README updates between markers
+- Pinned-style SVG cards, one clickable card per post, light and dark aware
 - No external dependencies except `feedparser`
 - Easy integration with GitHub Actions
 
@@ -52,10 +53,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
+
+      - name: Checkout feed-to-posts
+        uses: actions/checkout@v7
+        with:
+          repository: lucianofedericopereira/feed-to-posts
+          path: feed-to-posts
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: '3.x'
 
@@ -88,6 +95,10 @@ jobs:
 | `--readme-path` | No | `README.md` | Path to your README file |
 | `--template` | No | `$newline- [$title]($url)` | Template for formatting each post |
 | `--date-format` | No | `UTC: mmm. yyyy` | Date format string |
+| `--cards` | No | `0` | Render the newest N posts as SVG cards instead of the template; rounded down to an even number (7 → 6) |
+| `--cards-dir` | No | `assets/posts` | Folder for the card SVGs (`card-1.svg`, `card-2.svg`…) |
+| `--section-colors` | No | `''` | Dot colour per section, e.g. `Code=#6e7695,Design=#bc776f` |
+| `--custom-css` | No | `''` | CSS appended to each card |
 
 ### Template Variables
 
@@ -149,6 +160,26 @@ The `--date-format` parameter supports common patterns:
 - `"UTC: mmm. yyyy"` → `Jan. 2024` (UTC prefix is ignored)
 - Custom formats use Python's `strftime` patterns
 
+## Cards
+
+`--cards N` replaces the template with a grid of cards in the style of GitHub's pinned repositories, newest first, two per row:
+
+```bash
+python update_readme.py \
+  --feed-url "https://yourblog.com/feed.xml" \
+  --cards 6 \
+  --section-colors "Code=#6e7695,Design=#bc776f"
+```
+
+Each post becomes its own SVG, wrapped in a link to the post, so every card is clickable. A card shows:
+
+- **Name** in GitHub's link colour: the title up to the first colon (`Linknim` from `Linknim: A Bookmark Server Written in Nim`)
+- **Subtitle**: the rest of the title
+- **Extract**: the feed description, two lines, without the title repeated at its start
+- **Footer**: a coloured dot and the section, read from titles shaped `Section › Title`, and the reading time
+
+Reading time comes from the post's Markdown twin, the post URL plus `.md`, which codecraft publishes for every post. Without it the footer shows only the section. Cards follow the viewer's light/dark theme and collapse to name and reading time on narrow screens. Add the cards folder to the commit step (`git add README.md assets/posts`).
+
 ## Examples
 
 ### Example 1: Simple Markdown List
@@ -208,8 +239,8 @@ Make sure your README.md contains:
 
 ## Requirements
 
-- Python 3.6+
-- feedparser 6.0.11+
+- Python 3.10+
+- feedparser 6.0.14
 
 ## License
 

@@ -107,27 +107,27 @@ def render_card(entry, colors, custom_css):
     footer = ' · '.join(part for part in (section, f'{minutes} min read' if minutes else '') if part)
     color = colors.get(section, NEUTRAL)
     e = html.escape
-    lines = ''.join(f'\n    <text class="sans muted" x="20" y="{92 + i * 18}" font-size="13">{e(line)}</text>'
+    lines = ''.join(f'\n    <text class="sans muted" x="16" y="{84 + i * 18}" font-size="13">{e(line)}</text>'
                     for i, line in enumerate(wrap(extract, 46, 2)))
-    sub = f'\n    <text class="sans primary" x="20" y="62" font-size="14">{e(wrap(subtitle, 40, 1)[0])}</text>' if subtitle else ''
-    dot = f'\n    <circle cx="26" cy="131" r="6" fill="{color}"/>' if section else ''
-    foot_x = 38 if section else 20
+    sub = f'\n    <text class="sans primary" x="16" y="56" font-size="14">{e(wrap(subtitle, 40, 1)[0])}</text>' if subtitle else ''
+    dot = f'\n    <circle cx="22" cy="123" r="6" fill="{color}"/>' if section else ''
+    foot_x = 34 if section else 16
     narrow_foot = f'{minutes} min' if minutes else section
     aria = ' · '.join(part for part in (name + (f': {subtitle}' if subtitle else ''), footer) if part)
 
-    return f'''<svg viewBox="-8 -8 416 166" width="416" height="166" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="{e(aria)}">
+    return f'''<svg viewBox="-8 -8 416 158" width="416" height="158" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="{e(aria)}">
 {STYLE.format(custom_css=custom_css)}
-  <rect class="rule" x=".5" y=".5" width="399" height="149" rx="12" stroke-width="1"/>
+  <rect class="rule" x=".5" y=".5" width="399" height="141" rx="12" stroke-width="1"/>
   <g class="wide">
-    <path class="muted" transform="translate(20 19)" d="{REPO_ICON}"/>
-    <text class="sans accent" x="46" y="33" font-size="16" font-weight="600">{e(name)}</text>{sub}{lines}{dot}
-    <text class="sans muted" x="{foot_x}" y="135" font-size="13">{e(footer)}</text>
+    <path class="muted" transform="translate(16 15)" d="{REPO_ICON}"/>
+    <text class="sans accent" x="42" y="29" font-size="16" font-weight="600">{e(name)}</text>{sub}{lines}{dot}
+    <text class="sans muted" x="{foot_x}" y="127" font-size="13">{e(footer)}</text>
   </g>
   <g class="narrow">
-    <path class="muted" transform="translate(20 22) scale(2.25)" d="{REPO_ICON}"/>
-    <text class="sans accent" x="20" y="96" font-size="34" font-weight="600">{e(wrap(name, 14, 1)[0])}</text>{f"""
-    <circle cx="32" cy="128" r="10" fill="{color}"/>""" if section else ''}
-    <text class="sans muted" x="{52 if section else 20}" y="137" font-size="26">{e(narrow_foot)}</text>
+    <path class="muted" transform="translate(16 16) scale(2.25)" d="{REPO_ICON}"/>
+    <text class="sans accent" x="16" y="88" font-size="34" font-weight="600">{e(wrap(name, 14, 1)[0])}</text>{f"""
+    <circle cx="28" cy="120" r="10" fill="{color}"/>""" if section else ''}
+    <text class="sans muted" x="{48 if section else 16}" y="129" font-size="26">{e(narrow_foot)}</text>
   </g>
 </svg>
 '''
@@ -149,7 +149,7 @@ def build_cards(entries, count, cards_dir, readme_path, colors, custom_css=''):
         _, name, subtitle = split_title(entry.get('title', ''))
         alt = html.escape(name + (f': {subtitle}' if subtitle else ''), quote=True)
         link = html.escape(entry.get('link', '#'), quote=True)
-        markup.append(f'<a href="{link}"><img width="45%" src="./{rel}/card-{i}.svg" alt="{alt}"></a>')
+        markup.append(f'<a href="{link}"><img width="48%" src="./{rel}/card-{i}.svg" alt="{alt}"></a>')
 
     rows = ['&nbsp;\n'.join(markup[i:i + 2]) for i in range(0, len(markup), 2)]
     return '<p align="center">\n' + '\n<br>\n'.join(rows) + '\n</p>' if rows else ''

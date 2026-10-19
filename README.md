@@ -162,7 +162,7 @@ The `--date-format` parameter supports common patterns:
 
 ## Cards
 
-`--cards N` replaces the template with a grid of cards in the style of GitHub's pinned repositories, newest first, two per row:
+`--cards N` replaces the template with a grid of cards in the style of GitHub's pinned repositories, newest first, two per row on desktop and one per row on mobile:
 
 ```bash
 python update_readme.py \
@@ -178,7 +178,7 @@ Each post becomes its own SVG, wrapped in a link to the post, so every card is c
 - **Extract**: the feed description, two lines, without the title repeated at its start
 - **Footer**: a coloured dot and the section, read from titles shaped `Section › Title`, and the reading time
 
-Reading time comes from the post's Markdown twin, the post URL plus `.md`, which codecraft publishes for every post. Without it the footer shows only the section. Cards follow the viewer's light/dark theme and collapse to name and reading time on narrow screens. Add the cards folder to the commit step (`git add README.md assets/posts`).
+Reading time comes from the post's Markdown twin, the post URL plus `.md`, which codecraft publishes for every post. Without it the footer shows only the section. Cards have a fixed width, so they wrap to a single column on narrow screens instead of shrinking side by side. They follow the viewer's light/dark theme and collapse to name and reading time if squeezed below 260px. Add the cards folder to the commit step (`git add README.md assets/posts`).
 
 ## Examples
 

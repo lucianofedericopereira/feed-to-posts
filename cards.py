@@ -15,6 +15,7 @@ REPO_ICON = ("M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 
 
 NEUTRAL = '#858585'
 WORDS_PER_MINUTE = 200
+CARD_WIDTH = 390  # fixed, not %, so two fit per row on desktop and they wrap to one on mobile
 
 STYLE = '''  <style>
     .sans {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", "DejaVu Sans", Helvetica, Arial, sans-serif; }}
@@ -149,7 +150,6 @@ def build_cards(entries, count, cards_dir, readme_path, colors, custom_css=''):
         _, name, subtitle = split_title(entry.get('title', ''))
         alt = html.escape(name + (f': {subtitle}' if subtitle else ''), quote=True)
         link = html.escape(entry.get('link', '#'), quote=True)
-        markup.append(f'<a href="{link}"><img width="48%" src="./{rel}/card-{i}.svg" alt="{alt}"></a>')
+        markup.append(f'<a href="{link}"><img width="{CARD_WIDTH}" src="./{rel}/card-{i}.svg" alt="{alt}"></a>')
 
-    rows = ['&nbsp;\n'.join(markup[i:i + 2]) for i in range(0, len(markup), 2)]
-    return '<p align="center">\n' + '\n<br>\n'.join(rows) + '\n</p>' if rows else ''
+    return '<p align="center">\n' + '\n'.join(markup) + '\n</p>' if markup else ''

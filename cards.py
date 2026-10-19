@@ -15,7 +15,7 @@ REPO_ICON = ("M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 
 
 NEUTRAL = '#858585'
 WORDS_PER_MINUTE = 200
-CARD_WIDTH = 390  # fixed, not %, so two fit per row on desktop and they wrap to one on mobile
+CARD_WIDTH = 390  # fixed, not %, so two fit per row on desktop and they wrap to one on mobile; narrower = mobile
 
 STYLE = '''  <style>
     .sans {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", "DejaVu Sans", Helvetica, Arial, sans-serif; }}
@@ -29,8 +29,9 @@ STYLE = '''  <style>
       .accent  {{ fill: #4493f8; }}
       .rule    {{ stroke: #b1aea7; }}
     }}
-    .narrow {{ display: none; }}
-    @media (max-width: 260px) {{ .wide {{ display: none; }} .narrow {{ display: inline; }} }}
+    .mid, .narrow {{ display: none; }}
+    @media (max-width: {mid_below}px) {{ .wide {{ display: none; }} .mid {{ display: inline; }} }}
+    @media (max-width: 260px) {{ .mid {{ display: none; }} .narrow {{ display: inline; }} }}
     {custom_css}
   </style>'''
 
@@ -115,14 +116,24 @@ def render_card(entry, colors, custom_css):
     foot_x = 34 if section else 16
     narrow_foot = f'{minutes} min' if minutes else section
     aria = ' · '.join(part for part in (name + (f': {subtitle}' if subtitle else ''), footer) if part)
+    mid = [('primary', line) for line in wrap(subtitle, 36, 2)] if subtitle else []
+    mid += [('muted', line) for line in wrap(extract, 38, 2 - len(mid))] if len(mid) < 2 and extract else []
+    mid_lines = ''.join(f'\n    <text class="sans {cls}" x="16" y="{70 + i * 26}" font-size="{18 if cls == "primary" else 17}">{e(line)}</text>'
+                        for i, (cls, line) in enumerate(mid))
 
-    return f'''<svg viewBox="-8 -8 416 158" width="416" height="158" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="{e(aria)}">
-{STYLE.format(custom_css=custom_css)}
+    return f'''<svg viewBox="0 0 400 142" width="400" height="142" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="{e(aria)}">
+{STYLE.format(custom_css=custom_css, mid_below=CARD_WIDTH - 1)}
   <rect class="rule" x=".5" y=".5" width="399" height="141" rx="12" stroke-width="1"/>
   <g class="wide">
     <path class="muted" transform="translate(16 15)" d="{REPO_ICON}"/>
     <text class="sans accent" x="42" y="29" font-size="16" font-weight="600">{e(name)}</text>{sub}{lines}{dot}
     <text class="sans muted" x="{foot_x}" y="127" font-size="13">{e(footer)}</text>
+  </g>
+  <g class="mid">
+    <path class="muted" transform="translate(16 17) scale(1.375)" d="{REPO_ICON}"/>
+    <text class="sans accent" x="48" y="36" font-size="22" font-weight="600">{e(wrap(name, 26, 1)[0])}</text>{mid_lines}{f"""
+    <circle cx="24" cy="121" r="8" fill="{color}"/>""" if section else ''}
+    <text class="sans muted" x="{40 if section else 16}" y="127" font-size="17">{e(footer)}</text>
   </g>
   <g class="narrow">
     <path class="muted" transform="translate(16 16) scale(2.25)" d="{REPO_ICON}"/>
